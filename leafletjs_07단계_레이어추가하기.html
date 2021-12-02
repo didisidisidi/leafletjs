@@ -1,0 +1,190 @@
+<!--html 선언-->
+<!DOCTYPE html>
+
+<!--html 언어 '한글' 선언-->
+<html lang="ko">
+
+    <head>
+        <!--타이틀 선언-->
+        <title>7단계 레이어 추가하기</title>
+        <!--문자 코드셋 '유니코드' 선언-->
+        <meta charset="utf-8">
+        <!--leaflet의 css 선언-->
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" />
+        <!--leaflet의 javascript 선언-->
+        <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"></script>
+        <!--style을 이용해 leaflet map이 그려질 공간을 설정-->
+        <style>
+            html, body, #mapid{
+                height: 100%;
+                margin: 0;
+            }
+        </style>
+    </head>
+
+    <body>
+        <!--map이 그려질 부분인 div 코드 작성-->
+        <div id = 'mapid'>
+        </div>
+     
+        <script>
+            //맵 생성하기 -map 변수 설정과 초기 뷰(위경도, 줌레벨) 지정
+            var map = L.map('mapid').setView([37.46646, 126.95385],6);
+  
+            //맵 생성하기 -open street map 레이어 로드 및 출력
+            var osm = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+                attribution:'&copy; <a href="http://openstreetmap.org">OpenStreetMap</a> Contributors'
+            }).addTo(map);
+
+            //아래는 추가 맵 리스트
+            //1, 구글 스트리트 맵 추가 
+            var GoogleStreets = L.tileLayer('http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',{
+                maxZoom: 20,
+                subdomains:['mt0','mt1','mt2','mt3']
+            })
+
+            //2. 구글 위성맵 추가 
+            var GoogleSat = L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',{
+                maxZoom: 20,
+                subdomains:['mt0','mt1','mt2','mt3']
+            })
+
+            //3. 구글 지역맵 추가 
+            var GoogleTerrain = L.tileLayer('http://{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}',{
+                maxZoom: 20,
+                subdomains:['mt0','mt1','mt2','mt3']
+            })
+
+            //4. 구글 하이브리드맵 추가 
+            var GoogleHybrid = L.tileLayer('http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}',{
+                maxZoom: 20,
+                subdomains:['mt0','mt1','mt2','mt3']
+            })
+
+            //5. osm watercolor맵 추가 
+            var Stamen_Watercolor = L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.{ext}', {
+                attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+                subdomains: 'abcd',
+                minZoom: 1,
+                maxZoom: 16,
+                ext: 'jpg'
+            });
+
+            //layer control 생성
+            var baseMaps = {
+                "GoogleStreetMap": GoogleStreets,
+                "GoogleSatelliteMap":GoogleSat,
+                "GoogleTerrain":GoogleTerrain,
+                "GoogleHybrid":GoogleHybrid,
+                "Watercolor":Stamen_Watercolor,
+                "OpenStreetMap":osm
+            };
+            
+            //map 레이어를 기본 맵에 추가
+            L.control.layers(baseMaps).addTo(map);
+  
+            //커스텀 아이콘 만들기1 -나의아이콘 클래스 설정
+            var myIcon = L.Icon.extend({
+                options: {
+                shadowUrl: 'image/myicon_shadow.png',
+                iconSize:     [46, 62],
+                shadowSize:   [44, 22],
+                iconAnchor:   [23, 62],
+                shadowAnchor: [4, 22],
+                popupAnchor:  [0, -62]
+                }
+            });
+
+            //커스텀 아이콘 만들기2 -나의아이콘 클래스에 해당하는 각각의 아이콘 설정
+            var castleIcon = new myIcon({iconUrl: 'image/myicon_castle.png'}),
+                mountainIcon = new myIcon({iconUrl: 'image/myicon_mountain.png'}),
+                mountainroadIcon = new myIcon({iconUrl: 'image/myicon_mountainroad.png'}),
+                horseIcon = new myIcon({iconUrl: 'image/myicon_horse.png'});
+                buildingIcon = new myIcon({iconUrl: 'image/myicon_building.png'});
+                villageIcon = new myIcon({iconUrl: 'image/myicon_village.png'});
+
+                L.icon = function (options) {
+                    return new L.Icon(options);
+                };
+                         
+            //마커 표현하기
+            var marker =
+                L.marker([37.5017187355782, 127.117073289264], {icon:buildingIcon}).bindPopup('가락고등학교').addTo(map);
+                L.marker([37.5363557568735, 126.86659318496], {icon:buildingIcon}).bindPopup('<a href="https://gangseo.sen.hs.kr/index.do" target="_blank">강서고등학교</a>').addTo(map);
+                L.marker([37.5758229984656, 126.815613702693], {icon:buildingIcon}).bindPopup('<a href="https://gangseo-th.sen.hs.kr/index.do" target="_blank">강서공업고등학교</a>').addTo(map);
+                L.marker([37.5639979019972, 127.177898984961], {icon:buildingIcon}).bindPopup('<a href="https://gang-il.sen.hs.kr/index.do" target="_blank">강일고등학교</a>').addTo(map);
+                L.marker([37.484893420157, 127.059439298452], {icon:buildingIcon}).bindPopup('<a href="https://gaepo.sen.hs.kr/index.do" target="_blank">개포고등학교</a>').addTo(map);
+                L.marker([37.4925993679458, 126.981594427288], {icon:buildingIcon}).bindPopup('<a href="https://kyungmoon.sen.hs.kr/index.do" target="_blank">경문고등학교</a>').addTo(map);
+                L.marker([37.5215143659948, 126.882950442632], {icon:buildingIcon}).bindPopup('<a href="https://kwan-ak.sen.hs.kr/index.do" target="_blank">관악고등학교</a>').addTo(map);
+                L.marker([37.445061135621, 126.905908200302], {icon:buildingIcon}).bindPopup('<a href="https://geumcheon.sen.hs.kr/index.do" target="_blank">금천고등학교</a>').addTo(map);
+                L.marker([37.4724170033411, 126.925255367765], {icon:buildingIcon}).bindPopup('<a href="https://namkang.sen.hs.kr/index.do" target="_blank">남강고등학교</a>').addTo(map);
+                L.marker([37.4955639199515, 127.057690285877], {icon:buildingIcon}).bindPopup('<a href="https://dankook.sen.hs.kr/index.do" target="_blank">단국대학교부속소프트웨어고등학교</a>').addTo(map);
+                L.marker([37.53917668323, 126.862560066454], {icon:buildingIcon}).bindPopup('<a href="https://daeil.sen.hs.kr/index.do" target="_blank">대일고등학교</a>').addTo(map);
+                L.marker([37.5114232156813, 126.835012009695], {icon:buildingIcon}).bindPopup('<a href="https://daeil-tour.sen.hs.kr/index.do" target="_blank">대일관광고등학교</a>').addTo(map);
+                L.marker([37.4906954207731, 127.096169713795], {icon:buildingIcon}).bindPopup('<a href="https://daejindesign.sen.hs.kr/index.do" target="_blank">대진디자인고등학교</a>').addTo(map);
+                L.marker([37.5484640485635, 126.828807844483], {icon:buildingIcon}).bindPopup('<a href="https://deokwon.sen.hs.kr/index.do" target="_blank">덕원여자고등학교</a>').addTo(map);
+                L.marker([37.5494978735901, 126.828476400304], {icon:buildingIcon}).bindPopup('<a href="https://dwarts.sen.hs.kr/index.do" target="_blank">덕원예술고등학교</a>').addTo(map);
+                L.marker([37.490722610544, 126.837135027288], {icon:buildingIcon}).bindPopup('<a href="https://di.sen.hs.kr/index.do" target="_blank">덕일전자공업고등학교</a>').addTo(map);
+                L.marker([37.475899423233, 126.992318710094], {icon:buildingIcon}).bindPopup('<a href="https://dongduk.sen.hs.kr/index.do" target="_blank">동덕여자고등학교</a>').addTo(map);
+                L.marker([37.5197125082424, 127.14130484048], {icon:buildingIcon}).bindPopup('<a href="https://dongbuk.sen.hs.kr/index.do" target="_blank">동북고등학교</a>').addTo(map);
+                L.marker([37.4510018849445, 126.916273688432], {icon:buildingIcon}).bindPopup('<a href="https://dongilg.sen.hs.kr/index.do" target="_blank">동일여자고등학교</a>').addTo(map);
+                L.marker([37.4823535450116, 126.965226398452], {icon:buildingIcon}).bindPopup('<a href="https://dongjak.sen.hs.kr/index.do" target="_blank">동작고등학교</a>').addTo(map);
+                L.marker([37.5308085291907, 127.14427438311], {icon:buildingIcon}).bindPopup('<a href="https://doonchon.sen.hs.kr/index.do" target="_blank">둔촌고등학교</a>').addTo(map);
+                L.marker([37.5539897301364, 126.834324371468], {icon:buildingIcon}).bindPopup('<a href="https://mdgh.sen.hs.kr/index.do" target="_blank">명덕여자고등학교</a>').addTo(map);
+                L.marker([37.5541224132249, 126.833454042632], {icon:buildingIcon}).bindPopup('<a href="http://www.mdfh.or.kr/?main" target="_blank">명덕외국어고등학교</a>').addTo(map);
+                L.marker([37.5499461160855, 127.150281965916], {icon:buildingIcon}).bindPopup('<a href="https://myungil.sen.hs.kr/index.do" target="_blank">명일여자고등학교</a>').addTo(map);
+                L.marker([37.4490222270289, 126.899119398451], {icon:buildingIcon}).bindPopup('<a href="https://moonil.sen.hs.kr/index.do" target="_blank">문일고등학교</a>').addTo(map);
+                L.marker([37.4800631534854, 127.003852124124], {icon:buildingIcon}).bindPopup('<a href="https://sangmoon.sen.hs.kr/index.do" target="_blank">상문고등학교</a>').addTo(map);
+                L.marker([37.4892264628812, 126.985441454273], {icon:buildingIcon}).bindPopup('<a href="https://suhmoon.sen.hs.kr/index.do" target="_blank">서문여자고등학교</a>').addTo(map);
+                L.marker([37.4839789204698, 127.005513713795], {icon:buildingIcon}).bindPopup('<a href="https://seoul.sen.hs.kr/index.do" target="_blank">서울고등학교</a>').addTo(map);
+                L.marker([37.5016483491476, 126.922301900303], {icon:buildingIcon}).bindPopup('<a href="https://seoul-th.sen.hs.kr/index.do" target="_blank">서울공업고등학교</a>').addTo(map);
+                L.marker([37.4880244635016, 126.943613905317], {icon:buildingIcon}).bindPopup('<a href="https://seoul-tour.sen.hs.kr/index.do" target="_blank">서울관광고등학교</a>').addTo(map);
+                L.marker([37.4514916303956, 126.917421673864], {icon:buildingIcon}).bindPopup('<a href="https://dongil.sen.hs.kr/index.do" target="_blank">서울매그넷고등학교</a>').addTo(map);
+                L.marker([37.4767666925263, 126.967025427288], {icon:buildingIcon}).bindPopup('<a href="https://seoul-art.sen.hs.kr/index.do" target="_blank">서울미술고등학교</a>').addTo(map);
+                L.marker([37.4727358837932, 126.950465469616], {icon:buildingIcon}).bindPopup('<a href="https://sys.sen.hs.kr/index.do" target="_blank">서울여자상업고등학교</a>').addTo(map);
+                L.marker([37.5505849916798, 127.142245782809], {icon:buildingIcon}).bindPopup('<a href="http://www.ssd.hs.kr/?main" target="_blank">성덕고등학교</a>').addTo(map);
+                L.marker([37.4798900202598, 126.919637427288], {icon:buildingIcon}).bindPopup('<a href="https://sungbo.sen.hs.kr/index.do" target="_blank">성보고등학교</a>').addTo(map);
+                L.marker([37.5018743957149, 126.991844032603], {icon:buildingIcon}).bindPopup('<a href="https://www.sehwa.hs.kr/?" target="_blank">세화고등학교</a>').addTo(map);
+                L.marker([37.5022318717687, 126.99335678681], {icon:buildingIcon}).bindPopup('<a href="https://www.sehwa-gs.hs.kr/?" target="_blank">세화여자고등학교</a>').addTo(map);
+                L.marker([37.4915868469778, 127.142538998452], {icon:buildingIcon}).bindPopup('<a href="https://posung.sen.hs.kr/index.do" target="_blank">송파공업고등학교</a>').addTo(map);
+                L.marker([37.5498411806398, 126.824487504543], {icon:buildingIcon}).bindPopup('<a href="https://sumyeong.sen.hs.kr/index.do" target="_blank">수명고등학교</a>').addTo(map);
+                L.marker([37.5141138015621, 126.882020783109], {icon:buildingIcon}).bindPopup('<a href="https://shindorim.sen.hs.kr/index.do" target="_blank">신도림고등학교</a>').addTo(map);
+                L.marker([37.4784644218845, 126.916956613795], {icon:buildingIcon}).bindPopup('<a href="https://sillim.sen.hs.kr/index.do" target="_blank">신림고등학교</a>').addTo(map);
+                L.marker([37.5311594879107, 127.032783557975], {icon:buildingIcon}).bindPopup('<a href="https://apgujeong.sen.hs.kr/index.do" target="_blank">압구정고등학교</a>').addTo(map);
+                L.marker([37.4830374207918, 127.032061727288], {icon:buildingIcon}).bindPopup('<a href="https://yangjae.sen.hs.kr/index.do" target="_blank">양재고등학교</a>').addTo(map);
+                L.marker([37.5349458808304, 126.886941869617], {icon:buildingIcon}).bindPopup('<a href="https://yangchung.sen.hs.kr/index.do" target="_blank">양정고등학교</a>').addTo(map);
+                L.marker([37.5201784268876, 127.043347630452], {icon:buildingIcon}).bindPopup('<a href="http://www.yd.hs.kr/" target="_blank">영동고등학교</a>').addTo(map);
+                L.marker([37.510045437267, 127.089548398452], {icon:buildingIcon}).bindPopup('<a href="https://ydi.sen.hs.kr/index.do" target="_blank">영동일고등학교</a>').addTo(map);
+                L.marker([37.5086003091071, 126.933977371467], {icon:buildingIcon}).bindPopup('<a href="https://ydp.sen.hs.kr/index.do" target="_blank">영등포고등학교</a>').addTo(map);
+                L.marker([37.5152599097666, 126.915111611945], {icon:buildingIcon}).bindPopup('<a href="https://ydpg.sen.hs.kr/index.do" target="_blank">영등포여자고등학교</a>').addTo(map);
+                L.marker([37.5001774797113, 126.828215998452], {icon:buildingIcon}).bindPopup('<a href="https://oryu.sen.hs.kr/index.do" target="_blank">오류고등학교</a>').addTo(map);
+                L.marker([37.5016777880652, 127.114546927288], {icon:buildingIcon}).bindPopup('<a href="https://ilshin.sen.hs.kr/index.do" target="_blank">일신여자상업고등학교</a>').addTo(map);
+                L.marker([37.5131623925957, 126.915022810094], {icon:buildingIcon}).bindPopup('<a href="https://www.janghoon.hs.kr/" target="_blank">장훈고등학교</a>').addTo(map);
+                L.marker([37.4920533204952, 127.052250156124], {icon:buildingIcon}).bindPopup('<a href="https://cau.sen.hs.kr/index.do" target="_blank">중앙대학교사범대학부속고등학교</a>').addTo(map);
+                L.marker([37.5234417251433, 126.865883183109], {icon:buildingIcon}).bindPopup('<a href="https://jm.sen.hs.kr/index.do" target="_blank">진명여자고등학교</a>').addTo(map);
+                L.marker([37.5746017796973, 126.808342288662], {icon:buildingIcon}).bindPopup('<a href="https://hanseo.sen.hs.kr/index.do" target="_blank">한서고등학교</a>').addTo(map);
+                L.marker([37.5479189859952, 126.831551369617], {icon:buildingIcon}).bindPopup('<a href="https://hwagok.sen.hs.kr/index.do" target="_blank">화곡고등학교</a>').addTo(map);
+                L.marker([37.4852514529376, 127.064061913096], {icon:buildingIcon}).bindPopup('<a href="https://sudo.sen.hs.kr/index.do" target="_blank">수도전기공업고등학교</a>').addTo(map);
+                L.marker([37.4955535694691, 127.056493278709], {icon:buildingIcon}).bindPopup('<a href="https://dan-kook.sen.hs.kr/index.do" target="_blank">단국대학교사범대학부속고등학교</a>').addTo(map);
+                L.marker([37.4663529030224, 126.932883793773], {icon:buildingIcon}).bindPopup('<a href="https://www.e-mirim.hs.kr/main.do" target="_blank">미림여자정보과학고등학교</a>').addTo(map);
+                L.marker([37.4667421376653, 126.933285557004], {icon:buildingIcon}).bindPopup('<a href="https://mirim.sen.hs.kr/index.do" target="_blank">미림여자고등학교</a>').addTo(map);
+                L.marker([37.5087748538973, 126.851007269149], {icon:buildingIcon}).bindPopup('<a href="https://gocheok.sen.hs.kr/index.do" target="_blank">고척고등학교</a>').addTo(map);
+                L.marker([37.5176791152372, 127.2493872917], {icon:mountainIcon}).bindPopup('<a href="http://encykorea.aks.ac.kr/Contents/Item/E0002061" target="_blank">검단산</a>').addTo(map);
+                L.marker([37.4805861283197, 127.204079483574], {icon:mountainIcon}).bindPopup('<a href="http://encykorea.aks.ac.kr/Contents/Item/E0012257" target="_blank">남한산</a>').addTo(map);
+                L.marker([37.5487517744476, 126.990873385111], {icon:mountainIcon}).bindPopup('<a href="http://encykorea.aks.ac.kr/Contents/Item/E0011947" target="_blank">남산</a>').addTo(map);
+                L.marker([37.658711427696, 126.977979995656], {icon:mountainIcon}).bindPopup('<a href="http://encykorea.aks.ac.kr/Contents/Item/E0024788" target="_blank">삼각산</a>').addTo(map);
+                L.marker([37.5930286170158, 126.973730583189], {icon:mountainIcon}).bindPopup('<a href="http://encykorea.aks.ac.kr/Contents/Item/E0024687" target="_blank">북악산</a>').addTo(map);
+                L.marker([37.4749199720076, 127.078966690173], {icon:mountainIcon}).bindPopup('<a href="https://terms.naver.com/entry.naver?docId=1194595&cid=40942&categoryId=33147" target="_blank">대모산</a>').addTo(map);
+                L.marker([37.468934097771, 127.061563108857], {icon:mountainIcon}).bindPopup('<a href="https://terms.naver.com/entry.naver?docId=1194463&cid=40942&categoryId=33147" target="_blank">구룡산</a>').addTo(map);
+                L.marker([37.4444686051869, 126.963883287069], {icon:mountainIcon}).bindPopup('<a href="http://encykorea.aks.ac.kr/Contents/Item/E0004935" target="_blank">관악산</a>').addTo(map);
+                L.marker([37.5849150818276, 126.957848956179], {icon:mountainIcon}).bindPopup('<a href="http://encykorea.aks.ac.kr/Contents/Item/E0046977" target="_blank">인왕산</a>').addTo(map);
+                L.marker([41.99334013711, 128.078610815913], {icon:mountainIcon}).bindPopup('<a href="http://encykorea.aks.ac.kr/Contents/Item/E0022049" target="_blank"><center><big><b>백두산</b></big></a><br>함경남도 혜산군, 함경북도 무산군</center>').addTo(map);
+                L.marker([37.5011457242499, 126.820690141305], {icon:mountainIcon}).bindPopup('<a href="https://terms.naver.com/entry.naver?docId=1946639&cid=40942&categoryId=33147" target="_blank">와룡산</a>').addTo(map);
+                L.marker([37.5511561009568, 126.842302018367], {icon:mountainIcon}).bindPopup('<a href="https://terms.naver.com/entry.naver?docId=1946637&cid=40942&categoryId=33147" target="_blank">우장산</a>').addTo(map);
+                L.marker([37.5479189199746, 126.827552532634], {icon:mountainIcon}).bindPopup('<a href="https://terms.naver.com/entry.naver?docId=407813&cid=43722&categoryId=43722" target="_blank">수명산</a>').addTo(map);
+                L.marker([37.5816775289242, 126.806145385858], {icon:mountainIcon}).bindPopup('<a href="https://terms.naver.com/entry.naver?docId=1946635&cid=40942&categoryId=33147" target="_blank">개화산</a>').addTo(map);
+                L.marker([37.5956060473042, 126.828937233332], {icon:mountainIcon}).bindPopup('<a href="https://terms.naver.com/entry.naver?docId=764512&cid=43740&categoryId=44178" target="_blank">덕양산</a>').addTo(map);
+                
+        </script>
+    </body>
+</html>
